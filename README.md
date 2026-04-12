@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CS539 — Team Pied Piper
 Group Members: **Beret Buckley, Matthew Montero, Eleanor Grutz, Amaan Shirwani**  
 
@@ -160,6 +159,3 @@ result = lib.some_function(arg1, arg2)
 | `ziglang` | Zig compiler (bundled via pip) |
 
 ---
-=======
-# cs539_piedpiper
->>>>>>> a8a0bd236cb43b1009a12cf45e16c2acafd4e539
