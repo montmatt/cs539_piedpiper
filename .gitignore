@@ -15,3 +15,6 @@ zig-cache/
 data/
 __pycache__/
 *.pyc
+
+#datafiles
+datafiles/

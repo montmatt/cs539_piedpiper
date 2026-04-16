@@ -15,4 +15,12 @@ pub fn build(b: *std.Build) void {
     });
 
     b.installArtifact(lib);
+
+    const preprocess = b.addExecutable(.{ .name = "preprocess", .root_module = b.createModule(.{
+        .root_source_file = b.path("src/preprocess.zig"),
+        .target = target,
+        .optimize = optimize,
+    }) });
+
+    b.installArtifact(preprocess);
 }
