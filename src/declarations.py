@@ -10,5 +10,11 @@ else:
     lib = ctypes.CDLL(os.path.join(base, "zig-out", "lib", "libpiedpiper.so"))
 
 # Declare all functions here
-lib.add.argtypes = [ctypes.c_int32, ctypes.c_int32]
-lib.add.restype  = ctypes.c_int32
+
+lib.init.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_uint32]
+lib.init.restype  = ctypes.c_bool
+
+lib.deinit.argtypes = []
+
+lib.numAffectVecCols.argtypes = []
+lib.numAffectVecCols.restype  = ctypes.c_uint64

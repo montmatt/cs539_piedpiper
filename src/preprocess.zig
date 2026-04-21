@@ -137,6 +137,7 @@ pub fn main(init: std.process.Init) !void {
 
     // const allicator = std.heap.ArenaAllocator;
     var arena: std.heap.ArenaAllocator = .init(std.heap.page_allocator);
+    defer arena.deinit();
     const alloc = arena.allocator();
     try pre_parse_affectVec(affectvec, affectvec_dest, init, alloc);
 }
