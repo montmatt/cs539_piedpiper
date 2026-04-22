@@ -128,13 +128,10 @@ fn pre_parse_affectVec(filename: []const u8, dest_file: []const u8, init: std.pr
     // }
 }
 
+const affectvec = "datafiles/AffectVec-data.tsv";
+const affectvec_dest = "datafiles/compressed_AffectVec";
+
 pub fn main(init: std.process.Init) !void {
-    // Prints to stderr, unbuffered, ignoring potential errors.
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-
-    const affectvec = "datafiles/AffectVec-data.tsv";
-    const affectvec_dest = "datafiles/compressed_AffectVec";
-
     // const allicator = std.heap.ArenaAllocator;
     var arena: std.heap.ArenaAllocator = .init(std.heap.page_allocator);
     defer arena.deinit();

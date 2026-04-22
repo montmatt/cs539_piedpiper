@@ -2,7 +2,7 @@ const std = @import("std");
 
 const AffectVec = @import("AffectVec.zig");
 
-var avec: AffectVec = .new();
+var avec: AffectVec = undefined;
 
 export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u32) bool {
     avec = .new();
@@ -26,7 +26,7 @@ export fn deinit() void {
 }
 
 export fn numDataPoints() usize {
-    return 0;
+    return avec.values.items.len;
 }
 
 export fn numAffectVecCols() usize {
@@ -34,7 +34,10 @@ export fn numAffectVecCols() usize {
 }
 
 export fn numAffectVecRows() usize {
-    return 0;
+    const cols = avec.labels.items.len;
+    if (cols == 0) return 0;
+
+    return avec.values.items.len / cols;
 }
 
 export fn numWordVecCols() usize {
