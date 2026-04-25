@@ -16,6 +16,12 @@ export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u3
     }
     std.debug.print("\n", .{});
 
+    const sum = avec.sumAbsValues(avec.arena.allocator()) catch |err| {
+        std.debug.print("Failed to sum values. Error: {}\n", .{err});
+        return true;
+    };
+    std.debug.print("The sum is {any}", .{sum});
+
     _ = wordVec;
     _ = numClusters;
     return true;
@@ -26,7 +32,8 @@ export fn deinit() void {
 }
 
 export fn numDataPoints() usize {
-    return avec.values.items.len;
+    // return avec.
+    return 0;
 }
 
 export fn numAffectVecCols() usize {
@@ -34,10 +41,7 @@ export fn numAffectVecCols() usize {
 }
 
 export fn numAffectVecRows() usize {
-    const cols = avec.labels.items.len;
-    if (cols == 0) return 0;
-
-    return avec.values.items.len / cols;
+    return avec.values.len;
 }
 
 export fn numWordVecCols() usize {
@@ -48,24 +52,25 @@ export fn numWordVecRows() usize {
     return 0;
 }
 
-// Returns position of word in WordVec database on given axis
-export fn getWordVecPosOnAxis(word: [*]const u8, axis: usize) ?[*]f32 {
-    _ = word;
+// Returns position of word (row) in WordVec database on given axis
+export fn getWordVecvalue(row: usize, axis: usize) f32 {
+    _ = row;
     _ = axis;
-    return null;
+    return 0.0;
 }
 
 // Returns position of word in AffectVec database on given axis
-export fn getAffectVecPosOnAxis(word: [*]const u8, axis: usize) ?[*]f32 {
-    _ = word;
-    _ = axis;
-    return null;
+export fn getAffectVecValue(row: usize, axis: usize) f32 {
+    return avec.get(row)[axis] catch |err| {
+        std.debug.print("Failed to read affectVecValue {}", .{err});
+        return null
+    };
 }
 
 // Returns vector of the given word in the WordVec database
 // Length of vector is size of numWordVecRows()
-export fn getWordVecPos(word: [*]const u8) ?[*]f32 {
-    _ = word;
+export fn getWordVecPos(row: usize) ?[*]f32 {
+    // return avec.get(row).ptr;
     return null;
 }
 
@@ -83,7 +88,7 @@ export fn sumResponsibility(clusterIdx: usize) f32 {
 }
 
 // Average position of words weighted by responsibility for the given cluster
-export fn sumResponsibilityWeightedMean(clusterIdx: usize) f32 {
+export fn sumMeanWeightResponsibility(clusterIdx: usize) f32 {
     _ = clusterIdx;
     return 0.0;
 }

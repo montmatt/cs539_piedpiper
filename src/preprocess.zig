@@ -35,6 +35,7 @@ fn process_header(line: []const u8, alloc: std.mem.Allocator) !std.ArrayList([]c
     var iter = mem.splitAny(u8, line, &std.ascii.whitespace);
     while (iter.next()) |word| {
         if (word.len == 0) continue;
+        if (std.mem.eql(u8, word, "word")) continue;
         try headers.append(alloc, word);
     }
     return headers;
@@ -115,7 +116,7 @@ fn pre_parse_affectVec(filename: []const u8, dest_file: []const u8, init: std.pr
         };
         _ = reader.toss(1); // Toss delimter
 
-        var row = try process_row(line.written(), columns - 1, null, alloc);
+        var row = try process_row(line.written(), columns, null, alloc);
         try write_row(i, row, writer);
         row.deinit(alloc);
 
