@@ -1,13 +1,13 @@
 const std = @import("std");
 
-const AffectVec = @import("AffectVec.zig");
+const GenericVec = @import("UnionedVec.zig");
 
-var avec: AffectVec = undefined;
+var avec: GenericVec = undefined;
 
-export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u32) bool {
+export fn init(anyVec: [*:0]const u8, numClusters: u32) bool {
     avec = .new();
-    std.debug.print("Recieved string: {s}\n", .{std.mem.span(affectVec)});
-    if (!avec.init(std.mem.span(affectVec))) {
+    std.debug.print("Recieved string: {s}\n", .{std.mem.span(anyVec)});
+    if (!avec.init(std.mem.span(anyVec))) {
         return false;
     }
     std.debug.print("Labels:\n", .{});
@@ -22,7 +22,6 @@ export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u3
     };
     std.debug.print("The sum is {any}", .{sum});
 
-    _ = wordVec;
     _ = numClusters;
     return true;
 }
@@ -63,7 +62,7 @@ export fn getWordVecvalue(row: usize, axis: usize) f32 {
 export fn getAffectVecValue(row: usize, axis: usize) f32 {
     return avec.get(row)[axis] catch |err| {
         std.debug.print("Failed to read affectVecValue {}", .{err});
-        return null
+        return null;
     };
 }
 
