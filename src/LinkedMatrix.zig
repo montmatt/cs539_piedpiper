@@ -98,6 +98,9 @@ pub fn get(self: *LinkedMatrix, idx: usize) ![]f32 {
     return error.IndexOutOfRange;
 }
 
-
-
-let mystr = "hello";
+pub fn deinit(self: *LinkedMatrix, alloc: std.mem.Allocator) void {
+    var rowIter = self.iter();
+    while (rowIter.next()) |row| {
+        alloc.free(row);
+    }
+}
