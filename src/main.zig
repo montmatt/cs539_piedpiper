@@ -1,6 +1,10 @@
 const std = @import("std");
 
+<<<<<<< HEAD
 const GenericVec = @import("UnionedVec.zig");
+const ResponsibilityVec = @import("ResponsibilityVec.zig");
+
+var rvec: ResponsibilityVec = .new();
 
 var vec: GenericVec = undefined;
 
@@ -9,6 +13,10 @@ export fn init(aVec: [*:0]const u8, wVec: [*:0]const u8, numClusters: u32) bool 
     if (!vec.init(std.mem.span(aVec), std.mem.span(wVec))) {
         return false;
     }
+    if (!rvec.init(numClusters, avec.values.len)) {
+        return false;
+    }
+
     std.debug.print("Labels (word vec):\n", .{});
     for (vec.labels_word.items) |label| {
         std.debug.print("{s} ", .{label});
@@ -21,18 +29,29 @@ export fn init(aVec: [*:0]const u8, wVec: [*:0]const u8, numClusters: u32) bool 
 
     std.debug.print("\n", .{});
 
-    const sum = vec.sumAbsValuesAffect(vec.arena.allocator()) catch |err| {
+    const row = vec.values_affect.get(0) catch |err| blk: {
+        std.debug.print("Failed to get first row. Error: {}\n", .{err});
+        const default = [_]f32{};
+        break :blk default[0..];
+    };
+    for (row) |val| {
+        std.debug.print("{d} ", .{val});
+    }
+    std.debug.print("\n", .{});
+
+    const sum = avec.sumAbsValues(avec.arena.allocator()) catch |err| {
         std.debug.print("Failed to sum values. Error: {}\n", .{err});
         return true;
     };
     std.debug.print("The sum of affect vecs is {any}", .{sum});
 
-    _ = numClusters;
+    _ = wordVec;
     return true;
 }
 
 export fn deinit() void {
     vec.deinit();
+    rvec.deinit();
 }
 
 export fn numDataPoints() usize {
@@ -81,16 +100,19 @@ export fn getWordVecvalue(row: usize, axis: usize) f32 {
 
 // Returns position of word in AffectVec database on given axis
 export fn getAffectVecValue(row: usize, axis: usize) f32 {
-    return vec.get(row)[axis] catch |err| {
+    if (avec.values.get(row)) |rowVals| {
+        return rowVals[axis];
+    } else |err| {
         std.debug.print("Failed to read affectVecValue {}", .{err});
-        return null;
-    };
+        return 0.0;
+    }
 }
 
 // Returns vector of the given word in the WordVec database
 // Length of vector is size of numWordVecRows()
 export fn getWordVecPos(row: usize) ?[*]f32 {
-    // return vec.get(row).ptr;
+    // return avec.get(row).ptr;
+    _ = row;
     return null;
 }
 
