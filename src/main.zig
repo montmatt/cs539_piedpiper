@@ -1,27 +1,35 @@
 const std = @import("std");
 
-const AffectVec = @import("AffectVec.zig");
+<<<<<<< HEAD
+const GenericVec = @import("UnionedVec.zig");
 const ResponsibilityVec = @import("ResponsibilityVec.zig");
 
-var avec: AffectVec = .new();
 var rvec: ResponsibilityVec = .new();
 
-export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u32) bool {
-    std.debug.print("Recieved string: {s}\n", .{std.mem.span(affectVec)});
-    if (!avec.init(std.mem.span(affectVec))) {
+var vec: GenericVec = undefined;
+
+export fn init(aVec: [*:0]const u8, wVec: [*:0]const u8, numClusters: u32) bool {
+    vec = .new();
+    if (!vec.init(std.mem.span(aVec), std.mem.span(wVec))) {
         return false;
     }
     if (!rvec.init(numClusters, avec.values.len)) {
         return false;
     }
 
-    std.debug.print("Labels:\n", .{});
-    for (avec.labels.items) |label| {
+    std.debug.print("Labels (word vec):\n", .{});
+    for (vec.labels_word.items) |label| {
         std.debug.print("{s} ", .{label});
     }
+
+    std.debug.print("Labels (affect vec):\n", .{});
+    for (vec.labels_affect.items) |label| {
+        std.debug.print("{s} ", .{label});
+    }
+
     std.debug.print("\n", .{});
 
-    const row = avec.values.get(0) catch |err| blk: {
+    const row = vec.values_affect.get(0) catch |err| blk: {
         std.debug.print("Failed to get first row. Error: {}\n", .{err});
         const default = [_]f32{};
         break :blk default[0..];
@@ -35,35 +43,51 @@ export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u3
         std.debug.print("Failed to sum values. Error: {}\n", .{err});
         return true;
     };
-    std.debug.print("The sum is {any}", .{sum});
+    std.debug.print("The sum of affect vecs is {any}", .{sum});
 
     _ = wordVec;
     return true;
 }
 
 export fn deinit() void {
-    avec.deinit();
+    vec.deinit();
     rvec.deinit();
 }
 
 export fn numDataPoints() usize {
-    // return avec.
+    // return vec.
     return 0;
 }
 
-export fn numAffectVecCols() usize {
-    return avec.labels.items.len;
+export fn numAffectVecColsAffect() usize {
+    return vec.labels_affect.items.len;
 }
 
-export fn numAffectVecRows() usize {
-    return avec.values.len;
+export fn numAffectVecColsWord() usize {
+    return vec.labels_word.items.len;
 }
 
-export fn numWordVecCols() usize {
+export fn numAffectVecRowsAffect() usize {
+    return vec.values_affect.len;
+}
+
+export fn numAffectVecRowsWord() usize {
+    return vec.values_word.len;
+}
+
+export fn numWordVecColsAffect() usize {
     return 0;
 }
 
-export fn numWordVecRows() usize {
+export fn numWordVecColsWord() usize {
+    return 0;
+}
+
+export fn numWordVecRowsAffect() usize {
+    return 0;
+}
+
+export fn numWordVecRowsWord() usize {
     return 0;
 }
 

@@ -1,0 +1,4 @@
+[dependency-groups]
+dev = [
+    "gensim>=4.4.0",
+]
