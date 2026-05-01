@@ -1,18 +1,33 @@
 const std = @import("std");
 
 const AffectVec = @import("AffectVec.zig");
+const ResponsibilityVec = @import("ResponsibilityVec.zig");
 
 var avec: AffectVec = .new();
+var rvec: ResponsibilityVec = .new();
 
 export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u32) bool {
-    avec = .new();
     std.debug.print("Recieved string: {s}\n", .{std.mem.span(affectVec)});
     if (!avec.init(std.mem.span(affectVec))) {
         return false;
     }
+    if (!rvec.init(numClusters, avec.values.len)) {
+        return false;
+    }
+
     std.debug.print("Labels:\n", .{});
     for (avec.labels.items) |label| {
         std.debug.print("{s} ", .{label});
+    }
+    std.debug.print("\n", .{});
+
+    const row = avec.values.get(0) catch |err| blk: {
+        std.debug.print("Failed to get first row. Error: {}\n", .{err});
+        const default = [_]f32{};
+        break :blk default[0..];
+    };
+    for (row) |val| {
+        std.debug.print("{d} ", .{val});
     }
     std.debug.print("\n", .{});
 
@@ -23,12 +38,12 @@ export fn init(affectVec: [*:0]const u8, wordVec: [*:0]const u8, numClusters: u3
     std.debug.print("The sum is {any}", .{sum});
 
     _ = wordVec;
-    _ = numClusters;
     return true;
 }
 
 export fn deinit() void {
     avec.deinit();
+    rvec.deinit();
 }
 
 export fn numDataPoints() usize {
@@ -61,16 +76,19 @@ export fn getWordVecvalue(row: usize, axis: usize) f32 {
 
 // Returns position of word in AffectVec database on given axis
 export fn getAffectVecValue(row: usize, axis: usize) f32 {
-    return avec.get(row)[axis] catch |err| {
+    if (avec.values.get(row)) |rowVals| {
+        return rowVals[axis];
+    } else |err| {
         std.debug.print("Failed to read affectVecValue {}", .{err});
-        return null
-    };
+        return 0.0;
+    }
 }
 
 // Returns vector of the given word in the WordVec database
 // Length of vector is size of numWordVecRows()
 export fn getWordVecPos(row: usize) ?[*]f32 {
     // return avec.get(row).ptr;
+    _ = row;
     return null;
 }
 

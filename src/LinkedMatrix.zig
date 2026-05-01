@@ -42,6 +42,33 @@ pub fn appendFrom(self: *LinkedMatrix, alloc: std.mem.Allocator, from: []f32) !v
     }
 }
 
+pub fn appendEmpty(self: *LinkedMatrix, alloc: std.mem.Allocator) !void {
+    const link = try alloc.create(Link);
+    const ownedRow = try alloc.alloc(f32, self.width);
+    self.len += 1;
+    link.* = .{
+        .data = ownedRow.ptr,
+        .next = null,
+    };
+
+    if (self.tail == null) {
+        self.head = link;
+        self.tail = link;
+    } else {
+        self.tail.?.next = link;
+        self.tail = link;
+    }
+}
+
+pub fn resize(self: *LinkedMatrix, targetLen: usize, alloc: std.mem.Allocator) !void {
+    if (self.len > targetLen) {
+        return error.CannotShrink;
+    }
+    while (self.len < targetLen) {
+        return self.appendEmpty(alloc);
+    }
+}
+
 const Iter = struct {
     cur: ?*Link,
     width: usize,
@@ -70,3 +97,7 @@ pub fn get(self: *LinkedMatrix, idx: usize) ![]f32 {
     }
     return error.IndexOutOfRange;
 }
+
+
+
+let mystr = "hello";
