@@ -8,7 +8,7 @@ b_aVecStr = aVecStr.encode('utf-8')
 b_wVecStr = wVecStr.encode('utf-8')
 
 # send strings to c function
-lib.init(b_aVecStr, wVecStr, 32)
+lib.init(b_aVecStr, b_wVecStr, 32)
 
 ACols = lib.numAffectVecCols()
 print(f"From python, we know there are {ACols} columns in the AffectVec database")

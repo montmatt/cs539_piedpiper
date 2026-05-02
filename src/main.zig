@@ -1,7 +1,7 @@
 const std = @import("std");
 
 const GenericVec = @import("UnionedVec.zig");
-const ResponsibilityVec = @import("ResponsibilityVec.zig");
+// const ResponsibilityVec = @import("ResponsibilityVec.zig");
 
 // var rvec: ResponsibilityVec = .new();
 
@@ -43,11 +43,11 @@ export fn init(aVec: [*:0]const u8, wVec: [*:0]const u8, numClusters: u32) bool 
     // var gpa = std.testing.allocator;
     // defer _ = gpa.deinit();
 
-    const sum = vec.sumAbsValuesAffect(_) catch |err| {
-        std.debug.print("Failed to sum values. Error: {}\n", .{err});
-        return true;
-    };
-    std.debug.print("The sum of affect vecs is {any}", .{sum});
+    // const sum = vec.sumAbsValuesAffect(_) catch |err| {
+    //     std.debug.print("Failed to sum values. Error: {}\n", .{err});
+    //     return true;
+    // };
+    // std.debug.print("The sum of affect vecs is {any}", .{sum});
 
     return true;
 }
@@ -61,11 +61,11 @@ export fn numDataPoints() usize {
     return 0;
 }
 
-export fn numAffectVecColsAffect() usize {
+export fn numAffectVecCols() usize {
     return vec.labels_affect.items.len;
 }
 
-export fn numAffectVecColsWord() usize {
+export fn numWordVecCols() usize {
     return vec.labels_word.items.len;
 }
 
