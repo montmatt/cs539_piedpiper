@@ -128,15 +128,15 @@ pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8) bool {
     var a_fr = a_file.reader(io, &a_read_buf);
     const a_reader = &a_fr.interface;
 
-    self.readLabels(a_reader) catch |err| {
+    self.readLabelsAffect(a_reader) catch |err| {
         std.debug.print("Failed to read labels. {}\n", .{err});
         return false;
     };
-    self.values = .init(self.labels.items.len);
+    self.values_affect = .init(self.labels_affect.items.len);
 
     var idx: u32 = 1;
     while (true) : (idx += 1) {
-        const res = self.readRow(a_reader, self.labels.items.len, idx) catch |err| {
+        const res = self.readRowAffect(a_reader, self.labels_affect.items.len, idx) catch |err| {
             std.debug.print("Failed to read row. {}\n", .{err});
             return false;
         };
@@ -147,15 +147,15 @@ pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8) bool {
     var w_fr = w_file.reader(io, &w_read_buf);
     const w_reader = &w_fr.interface;
 
-    self.readLabels(w_reader) catch |err| {
+    self.readLabelsWord(w_reader) catch |err| {
         std.debug.print("Failed to read labels. {}\n", .{err});
         return false;
     };
-    self.values = .init(self.labels.items.len);
+    self.values_word = .init(self.labels_word.items.len);
 
     idx = 1;
     while (true) : (idx += 1) {
-        const res = self.readRow(w_reader, self.labels.items.len, idx) catch |err| {
+        const res = self.readRowWord(w_reader, self.labels_affect.items.len, idx) catch |err| {
             std.debug.print("Failed to read row. {}\n", .{err});
             return false;
         };

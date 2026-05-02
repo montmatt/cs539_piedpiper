@@ -1,10 +1,9 @@
 const std = @import("std");
 
-<<<<<<< HEAD
 const GenericVec = @import("UnionedVec.zig");
 const ResponsibilityVec = @import("ResponsibilityVec.zig");
 
-var rvec: ResponsibilityVec = .new();
+// var rvec: ResponsibilityVec = .new();
 
 var vec: GenericVec = undefined;
 
@@ -13,9 +12,11 @@ export fn init(aVec: [*:0]const u8, wVec: [*:0]const u8, numClusters: u32) bool 
     if (!vec.init(std.mem.span(aVec), std.mem.span(wVec))) {
         return false;
     }
-    if (!rvec.init(numClusters, avec.values.len)) {
-        return false;
-    }
+
+    _ = numClusters;
+    // if (!rvec.init(numClusters, vec.values_affect.len)) {
+    //     return false;
+    // }
 
     std.debug.print("Labels (word vec):\n", .{});
     for (vec.labels_word.items) |label| {
@@ -39,19 +40,20 @@ export fn init(aVec: [*:0]const u8, wVec: [*:0]const u8, numClusters: u32) bool 
     }
     std.debug.print("\n", .{});
 
-    const sum = avec.sumAbsValues(avec.arena.allocator()) catch |err| {
+    // var gpa = std.testing.allocator;
+    // defer _ = gpa.deinit();
+
+    const sum = vec.sumAbsValuesAffect(_) catch |err| {
         std.debug.print("Failed to sum values. Error: {}\n", .{err});
         return true;
     };
     std.debug.print("The sum of affect vecs is {any}", .{sum});
 
-    _ = wordVec;
     return true;
 }
 
 export fn deinit() void {
     vec.deinit();
-    rvec.deinit();
 }
 
 export fn numDataPoints() usize {
@@ -100,7 +102,7 @@ export fn getWordVecvalue(row: usize, axis: usize) f32 {
 
 // Returns position of word in AffectVec database on given axis
 export fn getAffectVecValue(row: usize, axis: usize) f32 {
-    if (avec.values.get(row)) |rowVals| {
+    if (vec.values_affect.get(row)) |rowVals| {
         return rowVals[axis];
     } else |err| {
         std.debug.print("Failed to read affectVecValue {}", .{err});
