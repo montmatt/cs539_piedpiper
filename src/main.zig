@@ -195,7 +195,6 @@ export fn sumWordVecWeightResponsibility(clusterIdx: usize, sum: [*]f32, vecLen:
 // takes emotion vector. for each datapoint multiplies it by the responsibility of that cluster, and takes the sum of that over all datapoints
 export fn sumAffectVecWeightResponsibility(clusterIdx: usize, sumOut: [*]f32, vecLen: usize) bool {
     // Assert vec length matches with of the affectVec database
-    std.debug.print("Summing {} {} {}\n", .{ vec.values_affect.width, vecLen, vec.labels_affect.items.len });
     if (vecLen != vec.values_affect.width) {
         std.debug.print("Length of sum vector does not match with width of affectVec database.\n", .{});
         return false;
