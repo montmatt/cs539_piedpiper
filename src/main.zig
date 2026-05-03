@@ -205,7 +205,7 @@ export fn sumAffectVecWeightResponsibility(clusterIdx: usize, sumOut: [*]f32, ve
     while (aIter.next()) |aVals| {
         const rVals = rIter.next().?;
         for (aVals, 0..) |val, idx| {
-            sum[idx] += val * rVals[clusterIdx];
+            sumOut[idx] += val * rVals[clusterIdx];
         }
     }
     return true;
