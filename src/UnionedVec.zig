@@ -20,7 +20,10 @@ fn readLabelsAffect(self: *UnionVec, reader: *std.Io.Reader) !void {
 
     // Read size of labels section, then read labels to ref buffer
     const labelsLen = try reader.takeInt(usize, .native);
-    if (labelsLen - @sizeOf(usize) > self.readBufferLen) unreachable;
+    if (labelsLen - @sizeOf(usize) > self.readBufferLen) {
+        std.debug.print("Labels length {} exceeds read buffer length {}\n", .{ labelsLen, self.readBufferLen });
+        unreachable;
+    }
     const labelsBufRef = try reader.take(labelsLen - @sizeOf(usize));
 
     // copy labels buffer to owned bufer stored in arena allocator
@@ -44,10 +47,15 @@ fn readLabelsAffect(self: *UnionVec, reader: *std.Io.Reader) !void {
 }
 
 fn readLabelsWord(self: *UnionVec, reader: *std.Io.Reader) !void {
-
+    std.debug.print("Reading word labels...\n", .{});
     // Read size of labels section, then read labels to ref buffer
     const labelsLen = try reader.takeInt(usize, .native);
-    if (labelsLen - @sizeOf(usize) > self.readBufferLen) unreachable;
+    std.debug.print("Word labels length: {}\n", .{labelsLen});
+    std.debug.print("Read buffer length: {}\n", .{self.readBufferLen});
+    if (labelsLen - @sizeOf(usize) > self.readBufferLen) {
+        std.debug.print("Labels length {} exceeds read buffer length {}\n", .{ labelsLen, self.readBufferLen });
+        unreachable;
+    }
     const labelsBufRef = try reader.take(labelsLen - @sizeOf(usize));
 
     // copy labels buffer to owned bufer stored in arena allocator
@@ -66,7 +74,7 @@ fn readLabelsWord(self: *UnionVec, reader: *std.Io.Reader) !void {
         while (idx < ownedlabelsBuf.len and ownedlabelsBuf[idx] == 0) : (idx += 1) {}
         ownedlabelsBuf = ownedlabelsBuf[idx..];
 
-        try self.labels_affect.append(alloc, label);
+        try self.labels_word.append(alloc, label);
     }
 }
 
@@ -79,7 +87,11 @@ fn readRowAffect(self: *UnionVec, reader: *std.Io.Reader, width: usize, expected
         std.debug.print("Unexpected ID found in reading row. Found {} expected {}.\n", .{ idCheck, expectedID });
         return error.IllformatedRow;
     }
-    if ((width * @sizeOf(f32)) > self.readBufferLen) unreachable;
+
+    if ((width * @sizeOf(f32)) > self.readBufferLen) {
+        std.debug.print("Row width {} exceeds read buffer length {}\n", .{ width * @sizeOf(f32), self.readBufferLen });
+        unreachable;
+    }
     const rowRef: []f32 = @ptrCast(@alignCast(try reader.take(width * @sizeOf(f32))));
     try self.values_affect.appendFrom(self.arena.allocator(), rowRef);
     return true;
@@ -94,7 +106,10 @@ fn readRowWord(self: *UnionVec, reader: *std.Io.Reader, width: usize, expectedID
         std.debug.print("Unexpected ID found in reading row. Found {} expected {}.\n", .{ idCheck, expectedID });
         return error.IllformatedRow;
     }
-    if ((width * @sizeOf(f32)) > self.readBufferLen) unreachable;
+    if ((width * @sizeOf(f32)) > self.readBufferLen) {
+        std.debug.print("Row width {} exceeds read buffer length {}\n", .{ width * @sizeOf(f32), self.readBufferLen });
+        return error.BufferTooSmall;
+    }
     const rowRef: []f32 = @ptrCast(@alignCast(try reader.take(width * @sizeOf(f32))));
     try self.values_word.appendFrom(self.arena.allocator(), rowRef);
     return true;
@@ -162,13 +177,13 @@ pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8, num_clu
 
     self.readLabelsWord(w_reader) catch |err| {
         std.debug.print("Failed to read labels. {}\n", .{err});
-        // return false;
+        return false;
     };
     self.values_word = .init(self.labels_word.items.len);
 
     idx = 1;
     while (true) : (idx += 1) {
-        const res = self.readRowWord(w_reader, self.labels_affect.items.len, idx) catch |err| blk: {
+        const res = self.readRowWord(w_reader, self.labels_word.items.len, idx) catch |err| blk: {
             std.debug.print("Failed to read row. {}\n", .{err});
             // return false;
             // return false;

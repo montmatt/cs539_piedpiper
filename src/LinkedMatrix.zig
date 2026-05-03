@@ -25,7 +25,10 @@ pub fn init(width: usize) LinkedMatrix {
 pub fn appendFrom(self: *LinkedMatrix, alloc: std.mem.Allocator, from: []f32) !void {
     const link = try alloc.create(Link);
     const ownedRow = try alloc.alloc(f32, from.len);
-    if (from.len != self.width) unreachable;
+    if (from.len != self.width) {
+        std.debug.print("Length of input row does not match width of LinkedMatrix. Expected {}, got {}\n", .{ self.width, from.len });
+        return error.InvalidRowLength;
+    }
     self.len += 1;
     std.mem.copyForwards(f32, ownedRow, from);
     link.* = .{

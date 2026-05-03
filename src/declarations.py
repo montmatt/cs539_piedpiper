@@ -130,6 +130,7 @@ lib.sumAffectVecWeightResponsibility.argtypes = [ctypes.c_uint64, ctypes.POINTER
 lib.sumAffectVecWeightResponsibility.restype  = ctypes.c_bool
 def sumAffectVecWeightResponsibility(clusterIdx: int) -> list[float]:
     sum = [0.0] * lib.numAffectVecCols()
+    print(len(sum))
     arr_type = ctypes.c_float * len(sum)
     c_affectVec = arr_type(*sum)
     if not lib.sumAffectVecWeightResponsibility(clusterIdx, c_affectVec, len(sum)):
