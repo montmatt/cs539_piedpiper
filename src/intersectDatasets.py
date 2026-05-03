@@ -11,4 +11,4 @@ is_in = np.isin(affect_vec_words, intersection)
 print(is_in)
 reduced_affect_vecs = affect_vec[np.insert(is_in, 0, True)]
 
-np.savetxt("./datafiles/AffectVec-data2.tsv", reduced_affect_vecs, fmt='%s', delimiter="\t")
+np.savetxt("./datafiles/AffectVec-data.tsv", reduced_affect_vecs, fmt='%s', delimiter="\t")
