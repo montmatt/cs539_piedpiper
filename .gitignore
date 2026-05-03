@@ -12,7 +12,7 @@ zig-out/
 zig-cache/
 .zig-cache/
 
-data/
+# Python
 __pycache__/
 *.pyc
 
