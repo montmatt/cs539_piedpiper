@@ -138,7 +138,7 @@ pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8, num_clu
     };
     defer a_file.close(io);
 
-    var a_read_buf: [self.readBufferLen]u8 = undefined;
+    var a_read_buf: [self.readBufferLen]u8 align(4) = undefined;
     var a_fr = a_file.reader(io, &a_read_buf);
     const a_reader = &a_fr.interface;
 
@@ -171,7 +171,7 @@ pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8, num_clu
     };
     defer w_file.close(io);
 
-    var w_read_buf: [self.readBufferLen]u8 = undefined;
+    var w_read_buf: [self.readBufferLen]u8 align(4) = undefined;
     var w_fr = w_file.reader(io, &w_read_buf);
     const w_reader = &w_fr.interface;
 
