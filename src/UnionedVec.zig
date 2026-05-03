@@ -10,6 +10,8 @@ values_affect: LinkedMatrix,
 labels_word: std.ArrayList([]const u8),
 values_word: LinkedMatrix,
 
+values_resp: LinkedMatrix,
+
 arena: std.heap.ArenaAllocator,
 
 comptime readBufferLen: usize = 3072,
@@ -104,25 +106,22 @@ pub fn new() UnionVec {
         .labels_word = .empty,
         .values_affect = .init(0),
         .values_word = .init(0),
+        .values_resp = .init(0),
         .arena = .init(std.heap.page_allocator),
     };
 }
 
-pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8) bool {
+pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8, num_clusters: usize) bool {
     var threaded: std.Io.Threaded = .init_single_threaded;
     const io = threaded.io();
+
+    // Read in Affect Vec
 
     var a_file = std.Io.Dir.cwd().openFile(io, affectVec, .{ .mode = .read_only }) catch |err| {
         std.debug.print("Failed to open file. {}\n", .{err});
         return false;
     };
     defer a_file.close(io);
-
-    var w_file = std.Io.Dir.cwd().openFile(io, wordVec, .{ .mode = .read_only }) catch |err| {
-        std.debug.print("Failed to open file. {}\n", .{err});
-        return false;
-    };
-    defer w_file.close(io);
 
     var a_read_buf: [self.readBufferLen]u8 = undefined;
     var a_fr = a_file.reader(io, &a_read_buf);
@@ -143,25 +142,48 @@ pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8) bool {
         if (res == false) break;
     }
 
+    // Read in word vec
+
+    var w_file = std.Io.Dir.cwd().openFile(io, wordVec, .{ .mode = .read_only }) catch |err| {
+        std.debug.print("Failed to open file. {}\n", .{err});
+        // return false;
+        self.values_resp = .init(num_clusters);
+        self.values_resp.resize(self.values_affect.len, self.arena.allocator()) catch |err_| {
+            std.debug.print("Failed to initialize responsibility vec. {}\n", .{err_});
+            return false;
+        };
+        return true;
+    };
+    defer w_file.close(io);
+
     var w_read_buf: [self.readBufferLen]u8 = undefined;
     var w_fr = w_file.reader(io, &w_read_buf);
     const w_reader = &w_fr.interface;
 
     self.readLabelsWord(w_reader) catch |err| {
         std.debug.print("Failed to read labels. {}\n", .{err});
-        return false;
+        // return false;
     };
     self.values_word = .init(self.labels_word.items.len);
 
     idx = 1;
     while (true) : (idx += 1) {
-        const res = self.readRowWord(w_reader, self.labels_affect.items.len, idx) catch |err| {
+        const res = self.readRowWord(w_reader, self.labels_affect.items.len, idx) catch |err| blk: {
             std.debug.print("Failed to read row. {}\n", .{err});
-            return false;
+            // return false;
+            // return false;
+            break :blk false;
         };
         if (res == false) break;
     }
+    std.debug.print("Finished reading in data. Read {} rows of affect vec and {} rows of word vec.\n", .{ self.values_affect.len, self.values_word.len });
 
+    // initialize responsibility vec
+    self.values_resp = .init(num_clusters);
+    self.values_resp.resize(self.values_affect.len, self.arena.allocator()) catch |err| {
+        std.debug.print("Failed to initialize responsibility vec. {}\n", .{err});
+        return false;
+    };
     return true;
 }
 

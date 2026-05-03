@@ -45,6 +45,7 @@ pub fn appendFrom(self: *LinkedMatrix, alloc: std.mem.Allocator, from: []f32) !v
 pub fn appendEmpty(self: *LinkedMatrix, alloc: std.mem.Allocator) !void {
     const link = try alloc.create(Link);
     const ownedRow = try alloc.alloc(f32, self.width);
+    for (ownedRow) |*val| val.* = 0;
     self.len += 1;
     link.* = .{
         .data = ownedRow.ptr,
@@ -65,7 +66,7 @@ pub fn resize(self: *LinkedMatrix, targetLen: usize, alloc: std.mem.Allocator) !
         return error.CannotShrink;
     }
     while (self.len < targetLen) {
-        return self.appendEmpty(alloc);
+        try self.appendEmpty(alloc);
     }
 }
 
