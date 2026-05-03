@@ -110,7 +110,10 @@ fn readRowWord(self: *UnionVec, reader: *std.Io.Reader, width: usize, expectedID
         std.debug.print("Row width {} exceeds read buffer length {}\n", .{ width * @sizeOf(f32), self.readBufferLen });
         return error.BufferTooSmall;
     }
-    const rowRef: []f32 = @ptrCast(@alignCast(try reader.take(width * @sizeOf(f32))));
+    const taken = try reader.take(width * @sizeOf(f32));
+    const rowRef: []f32 = @ptrCast(@alignCast(
+            taken
+            ));
     try self.values_word.appendFrom(self.arena.allocator(), rowRef);
     return true;
 }
@@ -171,7 +174,7 @@ pub fn init(self: *UnionVec, affectVec: []const u8, wordVec: []const u8, num_clu
     };
     defer w_file.close(io);
 
-    var w_read_buf: [self.readBufferLen]u8 = undefined;
+    var w_read_buf: [self.readBufferLen]u8 align(4) = undefined;
     var w_fr = w_file.reader(io, &w_read_buf);
     const w_reader = &w_fr.interface;
 

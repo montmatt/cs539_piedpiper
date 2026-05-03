@@ -192,7 +192,8 @@ export fn sumWordVecWeightResponsibility(clusterIdx: usize, sum: [*]f32, vecLen:
     return true;
 }
 
-export fn sumAffectVecWeightResponsibility(clusterIdx: usize, sum: [*]f32, vecLen: usize) bool {
+// takes emotion vector. for each datapoint multiplies it by the responsibility of that cluster, and takes the sum of that over all datapoints
+export fn sumAffectVecWeightResponsibility(clusterIdx: usize, sumOut: [*]f32, vecLen: usize) bool {
     // Assert vec length matches with of the affectVec database
     std.debug.print("Summing {} {} {}\n", .{ vec.values_affect.width, vecLen, vec.labels_affect.items.len });
     if (vecLen != vec.values_affect.width) {
@@ -209,14 +210,6 @@ export fn sumAffectVecWeightResponsibility(clusterIdx: usize, sum: [*]f32, vecLe
         }
     }
     return true;
-}
-
-// Sum responsibilitys
-export fn sumResponsibilityWeightedVec(clusterIdx: usize, emotionVec: [*]f32, vecLen: usize) ?[*]f32 {
-    _ = clusterIdx;
-    _ = emotionVec;
-    _ = vecLen;
-    return null;
 }
 
 // sum of square distance of data points from given point weighted by the responsibility value
