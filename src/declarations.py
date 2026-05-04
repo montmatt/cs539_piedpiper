@@ -138,3 +138,9 @@ def sumAffectVecWeightResponsibility(clusterIdx: int) -> list[float]:
     return list(c_affectVec)
 
 
+lib.updateResponsibility.argtypes = [ctypes.c_uint64, ctypes.POINTER(ctypes.c_float), ctypes.c_uint64]
+def updateResponsibility(clusterIdx: int, emotionVec: list[float]):
+    size = len(emotionVec)
+    arr = (ctypes.c_int * len(emotionVec))(*emotionVec)
+    if not lib.sumAffectVecWeightResponsibility(clusterIdx, arr, size):
+        raise ValueError(f"Failed to sum affect vector weight responsibility for cluster {clusterIdx}")

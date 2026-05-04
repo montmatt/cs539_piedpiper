@@ -217,8 +217,22 @@ export fn sumWeightedSquareDist(clusterIdx: u32, point: [*]f32) void {
     _ = point;
 }
 
+fn simularity(affect1: []f32, affect2: []f32) {
+    var MSE: f32 = 0.0;
+    for (affect1, affect2) |val1, val2| {
+        MSE += std.math.pow(val1 - val2, 2);
+    }
+    MSE /= affect1.len;
+    return 1-MSE;
+}
+
 // Updates responsibility value for all points for the specified cluster
-export fn updateResponsibility(clusterIdx: usize, emotionVec: [*]f32) void {
+export fn updateResponsibility(clusterIdx: usize, emotionVec: [*]f32, vecLen: usize) void {
+    if (vecLen != vec.values_affect.width) {
+        std.debug.print("Length of sum vector does not match with width of affectVec database.\n", .{});
+        return false;
+    }
+
     _ = clusterIdx;
     _ = emotionVec;
 }
