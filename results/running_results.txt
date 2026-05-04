@@ -7,3 +7,25 @@
    32    -14423726.18      7358986.61     77   True    333.4
    64    -14764877.48      7676691.26     52   True    456.4
   128    -14882310.13      8029665.57    126   True   2153.9
+  256    -14497377.43      8425715.21     90   True   3175.5
+(
+Iteration   1:  obj/N =  145.7518  elapsed-time =   37.9s
+Iteration  10:  obj/N =  147.6701  elapsed-time =  368.9s
+Iteration  20:  obj/N =  147.8654  elapsed-time =  737.7s
+Iteration  30:  obj/N =  148.0288  elapsed-time = 1089.4s
+Iteration  40:  obj/N =  148.1444  elapsed-time = 1429.9s
+Iteration  50:  obj/N =  148.2308  elapsed-time = 1772.2s
+Iteration  60:  obj/N =  148.2806  elapsed-time = 2115.7s
+Iteration  70:  obj/N =  148.3196  elapsed-time = 2462.3s
+Iteration  80:  obj/N =  148.3503  elapsed-time = 2811.2s
+)
+  512    -13011679.40      8859898.16     54   True   3730.1
+(
+Iteration   1:  obj/N =  153.4733  elapsed-time =   69.6s
+Iteration  10:  obj/N =  155.6323  elapsed-time =  699.9s
+Iteration  20:  obj/N =  155.8853  elapsed-time = 1398.8s
+Iteration  30:  obj/N =  155.9531  elapsed-time = 2087.2s
+Iteration  40:  obj/N =  155.9829  elapsed-time = 2754.6s
+Iteration  50:  obj/N =  156.0032  elapsed-time = 3434.0s
+Saved partial results
+)
