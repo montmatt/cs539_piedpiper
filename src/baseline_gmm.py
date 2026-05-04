@@ -16,7 +16,6 @@ K_VALUES = [2, 4, 8, 16, 32, 64, 128, 256, 512]
 COVARIANCE_TYPE = "diag" # "diag", "full", "tied", "spherical"
 
 RANDOM_STATE = 42
-
 MAX_ITER = 200
 N_INIT = 1
 # --------------------------------------------------------------------------------
