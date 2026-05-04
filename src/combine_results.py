@@ -101,9 +101,8 @@ def main() -> None:
     print("=" * 60)
     print("Merging modified GMM CSVs ...")
     mod_inputs = [
-        RESULTS / "modified_bic_k2to32.csv",
-        RESULTS / "modified_bic_k64.csv",
-        RESULTS / "modified_bic_k128.csv",
+        RESULTS / "modified_bic_k2to128.csv",
+        RESULTS / "modified_bic_k256to512.csv",
     ]
     mod_full = merge_csvs(mod_inputs, RESULTS / "modified_bic_k2to512.csv", "modified")
 

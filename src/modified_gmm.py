@@ -20,7 +20,7 @@ A_VEC_PATH = ROOT / "datafiles" / "compressed_AffectVec"
 W_VEC_PATH = ROOT / "datafiles" / "compressed_WordVec"
 RESULTS_DIR = ROOT / "results"
 
-K_VALUES = [256]
+K_VALUES = [256, 512]
 
 NUM_THREADS = 32
 
@@ -134,6 +134,7 @@ def fit_modified_gmm(X: np.ndarray, M: np.ndarray, k: int,
 
     pi, mu, sigma_sq, h = initialize_from_kmeans(X, M, k, random_state)
 
+    fit_start = time.time() # Used for seeing elapsed time after N iterations
     prev_obj_per = -np.inf
     converged = False
     n_iter = 0
@@ -169,6 +170,12 @@ def fit_modified_gmm(X: np.ndarray, M: np.ndarray, k: int,
         sigma_sq = np.maximum(sigma_sq, REG_COVAR)
 
         n_iter = it
+
+        # Progress: print every 10 iterations
+        if it % 10 == 0 or it == 1:
+            elapsed = time.time() - fit_start
+            print(f"Iteration {it:>3}:  obj/N = {modified_obj_per:>9.4f}  elapsed-time = {elapsed:>6.1f}s",
+                  flush=True)
 
     log_lik = standard_log_likelihood(X, pi, mu, sigma_sq)
     n_params = k * D + k * D + (k - 1) + k * A
@@ -248,11 +255,24 @@ def main() -> None:
                 r["elapsed_sec"] = time.time() - t0
                 results.append(r)
                 print_row(r)
+
+                # Save after each K so a crash or Ctrl+C doesn't lose completed work
+                save_summary_csv(results, RESULTS_DIR / "modified_bic.csv")
+                joblib.dump(r, RESULTS_DIR / f"modified_gmm_k{k}.joblib")
+                print(f"Saved partial results")
+            except KeyboardInterrupt:
+                elapsed = time.time() - t0
+                print(f"\n{k:>5}   INTERRUPTED after {elapsed:.1f}s — partial results saved up to K={results[-1]['k'] if results else 'none'}")
+                break
             except Exception as e:
                 elapsed = time.time() - t0
                 print(f"{k:>5}   FAILED after {elapsed:.1f}s: {e}")
     finally:
         zig.deinit()
+    
+    if not results:
+        print("\nNo K values completed; nothing to save.")
+        return
 
     summary_csv = RESULTS_DIR / "modified_bic.csv"
     summary_df = save_summary_csv(results, summary_csv)
